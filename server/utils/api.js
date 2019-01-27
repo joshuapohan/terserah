@@ -14,7 +14,7 @@ async function getNearbyVenues(ll){
 		const res = await axios.get('https://api.foursquare.com/v2/venues/explore?ll=-6.1649353,106.79182650000001&section=food&client_id=' +process.env.client_id +'&client_secret=' + process.env.client_secret + '&v=20190101');
 		return res;
 	} catch(e){
-		throw new Error("unable to fetch api with request " + 'https://api.foursquare.com/v2/venues/explore?ll=-6.1649353,106.79182650000001&section=food&client_id=' +process.env.client_id +'&client_secret=' + process.env.client_secret + '&v=20190101');
+		throw new Error(e.message);
 	}
 }
 
