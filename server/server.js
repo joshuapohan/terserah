@@ -12,9 +12,9 @@ var io = socketIO(server);
 
 app.use(express.static(publicPath));
 
-// app.get('/', (req, res)=>{
-// 	res.status(200).send('Hello World');
-// });
+app.get('/test', (req, res)=>{
+	res.status(200).sendFile(publicPath + '/index.html');
+});
 
 io.on('connection', (socket)=>{
 
