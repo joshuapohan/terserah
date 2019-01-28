@@ -13,7 +13,7 @@ async function getNearbyVenues(ll){
 	try{
 		const _id = process.env.CLIENT_ID || process.env.client_id;
 		const _secret = process.env.CLIENT_SECRET || process.env.client_secret;
-		const res = await axios.get('https://api.foursquare.com/v2/venues/explore?ll=-6.1649353,106.79182650000001&section=food&client_id=' + _id +'&client_secret=' + _secret + '&v=20190101');
+		const res = await axios.get('https://api.foursquare.com/v2/venues/explore?ll=' + ll + '&section=food&client_id=' + _id +'&client_secret=' + _secret + '&v=20190101');
 		return res;
 	} catch(e){
 		throw new Error(e.message);
