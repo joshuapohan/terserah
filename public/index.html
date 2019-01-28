@@ -5,36 +5,172 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+		<!-- REACT LIBRARY -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react.js"></script>
+		<!-- REACT DOM LIBRARY -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react-dom.js"></script>
+		<!-- BABEL LIBRARY -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.25.0/babel.min.js"></script>
+		<!-- REACT ROUTER -->
+		<script src="https://unpkg.com/react-router-dom@4.0.0/umd/react-router-dom.min.js"></script>
+		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
     	<title>Terserah</title>
+    	<style>
+			body{
+				background-color: #223052;
+			}
+
+    		h1, h2, h3, h4{
+				font-family: 'Raleway', serif;
+				color: white !important;
+    		}
+
+		    .loader-container{
+		      position: absolute;
+		      width: 100%;
+		      height: 100%;
+		    }
+		    .loader{
+		      position: absolute;
+		      left:38%;
+		      top:50%;
+		      border: 10px solid #223052;
+		      border-top: 10px solid white;
+		      border-radius: 50%;
+		      width:50px;
+		      height:50px;
+		      animation: spin 1s linear infinite;
+		    }
+
+		    @keyframes spin {
+		      0%{ transform: rotate(0deg);}
+		      100%{ transform: rotate(540deg);}
+		    }
+
+		    .random-button{
+		    	margin-top: 30px;
+		    }
+    	</style>
 	</head>
 
-	<bod>
-		<div class="container">
-			<div class="row">
-				<div class="col-xs-4"></div>
-				<div class="col-xs-4 text-center">
-					<h1>Makan dimana ?</h1>
-				</div>
-				<div class="col-xs-4"></div>
-			</div>
-			<div class="row">
-				<div class="col-xs-4"></div>
-				<div class="col-xs-4 text-center">
-					<h2 id="restaurant-name">&nbsp</h2>
-					<h4 id="restaurant-address">&nbsp</h2>
-				</div>
-				<div class="col-xs-4"></div>
-			</div>
-			<div class="row">
-				<div class="col-xs-4"></div>
-				<div class="col-xs-4 text-center">
-					<button class="btn" id="random-food-btn">Terserah</button>
-				</div>
-				<div class="col-xs-4"></div>
-			</div>
-		</div>
-	    <script src="/js/libs/jquery-3.3.1.min.js"></script>
+	<body>
+		<div id="root" class="content"></div>
 	    <script src="/socket.io/socket.io.js"></script>
 	    <script src="/js/index.js"></script>
+		<script type="text/babel">
+
+			class Header extends React.Component{
+				constructor(props){
+					super(props);
+				}
+
+				render(){
+					return(
+						<div className="row">
+							<div className="col-sm-4"></div>
+							<div className="col xs-12 col-sm-4 text-center">
+								<h1>Makan dimana ?</h1>
+							</div>
+							<div className="col-sm-4"></div>
+						</div>
+					);
+				};
+			}
+
+			class Randomizer extends React.Component{
+				constructor(props){
+					super(props);
+					this.state = {
+						loading: false,
+						restaurant: "\u00a0",
+						address: "\u00a0"
+					};
+					this.getRestaurant = this.getRestaurant.bind(this);
+				}
+
+				getRestaurant(){
+					if(!navigator.geolocation){
+						return alert('Geolocation not supported by your browser');
+					}
+
+					navigator.geolocation.getCurrentPosition((position)=>{
+						this.setState({
+							loading: true
+						});
+						socket.emit('getRandomFood', {
+							latitude: position.coords.latitude,
+							longitude: position.coords.longitude
+						}, (restaurant)=>{
+							this.setState({
+								restaurant: restaurant.name,
+								address: restaurant.location.address,
+								loading: false
+							});
+							console.log(this.state);
+						});
+					}, function(){
+						alert("Unable to fetch location");
+					});
+				}
+
+
+				render(){
+					if(this.state.loading){
+						return(
+							<div className="container">
+								<Header/>
+								<div className="row">
+									<div className="col-sm-4"></div>
+									<div className="col xs-12 col-sm-4 text-center">
+										<div className='loader-container'>
+											<div className='loader'></div>
+										</div>
+										<h3 id="restaurant-name">&nbsp;</h3>
+										<h4 id="restaurant-address">&nbsp;</h4>
+									</div>
+									<div className="col-sm-4"></div>
+								</div>
+								<div className="row">
+									<div className="col-sm-4"></div>
+									<div className="col xs-12 col-sm-4 text-center">
+										<button className="btn random-button" id="random-food-btn" onClick={this.getRestaurant} disabled>Loading</button>
+									</div>
+									<div className="col-sm-4"></div>
+								</div>
+							</div>
+						);		
+					}
+					else{
+						return(
+							<div className="container">
+								<Header/>
+								<div className="row">
+									<div className="col-sm-4"></div>
+									<div className="col xs-12 col-sm-4 text-center">
+										<h3 id="restaurant-name">{this.state.restaurant}</h3>
+										<h4 id="restaurant-address">{this.state.address}</h4>
+									</div>
+									<div className="col-sm-4"></div>
+								</div>
+								<div className="row">
+									<div className="col-sm-4"></div>
+									<div className="col xs-12 col-sm-4 text-center">
+										<button className="btn random-button" id="random-food-btn" onClick={this.getRestaurant}>Terserah</button>
+									</div>
+									<div className="col-sm-4"></div>
+								</div>
+							</div>
+						);
+					}
+				}
+			}
+
+
+		    ReactDOM.render(
+				(
+				<Randomizer />
+		    	), document.getElementById('root')
+			);
+		</script>
 	</body>
 <html>
