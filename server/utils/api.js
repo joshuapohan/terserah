@@ -23,7 +23,7 @@ async function getNearbyVenues(ll){
 async function getRandomRestaurant(location){
 	const ll = location;
 
-	const restaurants = await getNearbyVenues().then((res)=>{
+	const restaurants = await getNearbyVenues(ll).then((res)=>{
 		const venues = res.data.response.groups[0].items.map((venue)=>{
 			return _.pick(venue.venue,['name', 'location']);
 		});
