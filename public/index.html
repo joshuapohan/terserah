@@ -44,11 +44,25 @@
 
 		    @keyframes spin {
 		      0%{ transform: rotate(0deg);}
-		      100%{ transform: rotate(540deg);}
+		      100%{ transform: rotate(720deg);}
 		    }
 
 		    .random-button{
 		    	margin-top: 30px;
+		    	margin-bottom: 10px;
+		    }
+
+		    #zomato-link{
+		    	color: white;
+		    	text-decoration: none !important; 
+		    }
+
+		    .thumbnail{
+		    	margin-top: 10px;
+		    	width: 150px;
+		    	height: 150px;
+		    	display: inline-block !important;
+		    	border: white;
 		    }
     	</style>
 	</head>
@@ -77,15 +91,47 @@
 				};
 			}
 
+			class RestaurantDetail extends React.Component{
+				
+				constructor(props){
+					super(props);
+					this.state = {
+						restaurant: this.props.restaurant
+					}
+				}
+
+				render(){
+					if(this.state.restaurant){
+						return(
+							<div className="container">
+								<div className="row">
+									<div className="col-sm-4"></div>
+									<div className="col xs-12 col-sm-4 text-center">
+										<img className="thumbnail" src={this.state.restaurant.thumb}></img>
+										<h4>{this.state.restaurant.name}</h4>
+										<h4>Cuisine : {this.state.restaurant.cuisines}</h4>
+										<a id="zomato-link" target="_blank" href={this.state.restaurant.url}>View on Zomato</a>
+									</div>
+									<div className="col-sm-4"></div>
+								</div>
+							</div>
+						);
+					}
+				}
+			}
+
 			class Randomizer extends React.Component{
 				constructor(props){
 					super(props);
 					this.state = {
 						loading: false,
 						restaurant: "\u00a0",
-						address: "\u00a0"
+						address: "\u00a0",
+						restaurant_obj: {},
+						restaurant_detail: null
 					};
 					this.getRestaurant = this.getRestaurant.bind(this);
+					this.getRestaurantDetail = this.getRestaurantDetail.bind(this);
 				}
 
 				getRestaurant(){
@@ -104,15 +150,28 @@
 							this.setState({
 								restaurant: restaurant.name,
 								address: restaurant.location.address,
-								loading: false
+								loading: false,
+								restaurant_obj: restaurant,
+								restaurant_detail: null
 							});
-							console.log(this.state);
 						});
 					}, function(){
 						alert("Unable to fetch location");
 					});
 				}
 
+				getRestaurantDetail(){
+					if(this.state.restaurant_obj){
+						socket.emit('getMoreDetails', this.state.restaurant_obj, (restaurant_detail)=>{
+							this.setState({
+								restaurant_detail: restaurant_detail
+							});
+						});
+					}
+					else{
+						alert("Don't know where to eat? Just click Terserah first");
+					}
+				}
 
 				render(){
 					if(this.state.loading){
@@ -141,26 +200,67 @@
 						);		
 					}
 					else{
-						return(
-							<div className="container">
-								<Header/>
-								<div className="row">
-									<div className="col-sm-4"></div>
-									<div className="col xs-12 col-sm-4 text-center">
-										<h3 id="restaurant-name">{this.state.restaurant}</h3>
-										<h4 id="restaurant-address">{this.state.address}</h4>
+						if(this.state.restaurant_detail){
+							return(
+								<div>
+									<div className="container">
+										<Header/>
+										<div className="row">
+											<div className="col-sm-4"></div>
+											<div className="col xs-12 col-sm-4 text-center">
+												<h3 id="restaurant-name">{this.state.restaurant}</h3>
+												<h4 id="restaurant-address">{this.state.address}</h4>
+											</div>
+											<div className="col-sm-4"></div>
+										</div>
+										<div className="row">
+											<div className="col-sm-4"></div>
+											<div className="col xs-12 col-sm-4 text-center">
+												<button className="btn btn-primary random-button" id="random-food-btn" onClick={this.getRestaurant}>Terserah</button>
+											</div>
+											<div className="col-sm-4"></div>
+										</div>
+										<div className="row">
+											<div className="col-sm-4"></div>
+											<div className="col xs-12 col-sm-4 text-center">
+												<button className="btn btn-danger" onClick={this.getRestaurantDetail}>More Info</button>
+											</div>
+											<div className="col-sm-4"></div>
+										</div>
 									</div>
-									<div className="col-sm-4"></div>
+									<RestaurantDetail restaurant={this.state.restaurant_detail}/>
 								</div>
-								<div className="row">
-									<div className="col-sm-4"></div>
-									<div className="col xs-12 col-sm-4 text-center">
-										<button className="btn random-button" id="random-food-btn" onClick={this.getRestaurant}>Terserah</button>
+							);
+						}
+						else{
+								return(
+								<div className="container">
+									<Header/>
+									<div className="row">
+										<div className="col-sm-4"></div>
+										<div className="col xs-12 col-sm-4 text-center">
+											<h3 id="restaurant-name">{this.state.restaurant}</h3>
+											<h4 id="restaurant-address">{this.state.address}</h4>
+										</div>
+										<div className="col-sm-4"></div>
 									</div>
-									<div className="col-sm-4"></div>
+									<div className="row">
+										<div className="col-sm-4"></div>
+										<div className="col xs-12 col-sm-4 text-center">
+											<button className="btn btn-primary random-button" id="random-food-btn" onClick={this.getRestaurant}>Terserah</button>
+										</div>
+										<div className="col-sm-4"></div>
+									</div>
+									<div className="row">
+										<div className="col-sm-4"></div>
+										<div className="col xs-12 col-sm-4 text-center">
+											<button className="btn btn-danger" onClick={this.getRestaurantDetail}>More Info</button>
+										</div>
+										<div className="col-sm-4"></div>
+									</div>
 								</div>
-							</div>
-						);
+							);
+						}
 					}
 				}
 			}
