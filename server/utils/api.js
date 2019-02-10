@@ -58,7 +58,7 @@ async function getRandomRestaurant(location){
 
 	const rand = getRndInteger(0, restaurants.length - 1);
 	//
-	getRestaurantDetails(restaurants[rand]);
+	//getRestaurantDetails(restaurants[rand]);
 	//
 	return restaurants[rand];
 }
