@@ -65,8 +65,15 @@ async function getRandomRestaurant(location){
 
 async function getRestaurantDetails(restaurant){
 	const api_key = process.env.ZOMATO_KEY || process.env.zomato_key;
+	const mapquest_key = process.env.MAPQUEST_KEY || process.env.mapquest_key;
+	let restaurant_detail;
+
 	const lat = restaurant.location.lat;
 	const lon = restaurant.location.lng;
+
+	/**********************************
+	*First fetch is from zomato
+	**********************************/
 	const name = encodeURI(restaurant.name);
 	const requestURL = 'https://developers.zomato.com/api/v2.1/search?q='+ name +'&count=1&lat=' + lat + '&lon=' + lon + '&radius=100';
 	const res = await axios.get(requestURL, {
@@ -74,9 +81,22 @@ async function getRestaurantDetails(restaurant){
 			'user-key': api_key
 		}
 	});
+
 	if(res && res.data && res.data.restaurants[0]){
-		return 	_.pick(res.data.restaurants[0].restaurant, ['name', 'url', 'cuisines', 'thumb']);
+		restaurant_detail = _.pick(res.data.restaurants[0].restaurant, ['name', 'url', 'cuisines', 'thumb', 'location']);
 	}
+
+	/**********************************
+	*Second fetch is from mapquest 
+	**********************************/
+	const mapURL = 'https://open.mapquestapi.com/staticmap/v4/getmap?key=' + mapquest_key + '&size=320,240&zoom=16&center=' + lat + ',' + lon +  '&pois=via-red-circle.png,'+ lat + ',' + lon;
+	const resMap = await axios.get(mapURL,{
+		responseType: 'arraybuffer'
+	});
+	restaurant_detail.mapImg = new Buffer(resMap.data,'binary').toString('base64');
+
+
+	return restaurant_detail;
 }
 
 // getRandomRestaurant('-6.1649353,106.79182650000001').then((restaurant)=>{

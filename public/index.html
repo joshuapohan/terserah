@@ -58,12 +58,27 @@
 		    }
 
 		    .thumbnail{
+				margin-top: 30px;
+				width: 150px;
+				height: 150px;
+				display: inline-block !important;
+				border: white;
+			  	border-radius: 100px;
+		    }
+
+		    .main-title{
 		    	margin-top: 10px;
-		    	width: 150px;
-		    	height: 150px;
-		    	display: inline-block !important;
+		    	border-style: dotted !important;
 		    	border: white;
 		    }
+
+		    .map-img{
+		    	height: 100%;
+		    	width: 100%;
+		    	object-fit: contain;
+		    	margin-bottom: 20px;
+		    }
+
     	</style>
 	</head>
 
@@ -82,7 +97,7 @@
 					return(
 						<div className="row">
 							<div className="col-sm-4"></div>
-							<div className="col xs-12 col-sm-4 text-center">
+							<div className="col xs-12 col-sm-4 text-center main-title">
 								<h1>Makan dimana ?</h1>
 							</div>
 							<div className="col-sm-4"></div>
@@ -111,6 +126,7 @@
 										<h4>{this.state.restaurant.name}</h4>
 										<h4>Cuisine : {this.state.restaurant.cuisines}</h4>
 										<a id="zomato-link" target="_blank" href={this.state.restaurant.url}>View on Zomato</a>
+										<img className="map-img" src={'data:image/jpeg;base64,' + this.state.restaurant.mapImg}></img>
 									</div>
 									<div className="col-sm-4"></div>
 								</div>
@@ -128,7 +144,8 @@
 						restaurant: "\u00a0",
 						address: "\u00a0",
 						restaurant_obj: {},
-						restaurant_detail: null
+						restaurant_detail: null,
+						loadingDetail: false
 					};
 					this.getRestaurant = this.getRestaurant.bind(this);
 					this.getRestaurantDetail = this.getRestaurantDetail.bind(this);
@@ -162,9 +179,13 @@
 
 				getRestaurantDetail(){
 					if(this.state.restaurant_obj){
+						this.setState({
+							loadingDetail: true
+						});
 						socket.emit('getMoreDetails', this.state.restaurant_obj, (restaurant_detail)=>{
 							this.setState({
-								restaurant_detail: restaurant_detail
+								restaurant_detail: restaurant_detail,
+								loadingDetail: false
 							});
 						});
 					}
@@ -232,8 +253,40 @@
 								</div>
 							);
 						}
+						else if(this.state.loadingDetail){
+							return(
+								<div>
+									<div className="container">
+										<Header/>
+										<div className="row">
+											<div className="col-sm-4"></div>
+											<div className="col xs-12 col-sm-4 text-center">
+												<h3 id="restaurant-name">{this.state.restaurant}</h3>
+												<h4 id="restaurant-address">{this.state.address}</h4>
+											</div>
+											<div className="col-sm-4"></div>
+										</div>
+										<div className="row">
+											<div className="col-sm-4"></div>
+											<div className="col xs-12 col-sm-4 text-center">
+												<button className="btn btn-primary random-button" id="random-food-btn" onClick={this.getRestaurant}>Terserah</button>
+											</div>
+											<div className="col-sm-4"></div>
+										</div>
+										<div className="row">
+											<div className="col-sm-4"></div>
+											<div className="col xs-12 col-sm-4 text-center">
+												<button className="btn btn-danger" onClick={this.getRestaurantDetail}>More Info</button>
+											</div>
+											<div className="col-sm-4"></div>
+										</div>
+									</div>
+									<h2 className="text-center">Fetching details</h2>
+								</div>
+							);
+						}
 						else{
-								return(
+							return(
 								<div className="container">
 									<Header/>
 									<div className="row">
