@@ -12,9 +12,18 @@ var app = express();
 var server = http.createServer(app);
 var io = socketIO(server);
 
+/**********************************************************************************************
+Need to put home route first otherwise index.html from public path is going to be served first
+Other option : add second parameter to express.static(path, {index: false})
+***********************************************************************************************/
+app.get('/', (req, res)=>{
+	res.status(200).sendFile(buildPath + '/index.html');
+});
+
 app.use(express.static(publicPath));
 app.use(express.static(buildPath));
 app.use(favicon(publicPath + '/images/favicon.ico'));
+
 
 app.get('/test', (req, res)=>{
 	res.status(200).sendFile(publicPath + '/index.html');
