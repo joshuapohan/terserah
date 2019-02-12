@@ -1,10 +1,10 @@
 body{
-	background-color: #223052;
+background-color: #223052;
 }
 
 h1, h2, h3, h4{
-	font-family: 'Raleway', serif;
-	color: white !important;
+font-family: 'Raleway', serif;
+color: white !important;
 }
 
 .loader-container{
@@ -30,20 +30,33 @@ h1, h2, h3, h4{
 }
 
 .random-button{
-	margin-top: 30px;
-	margin-bottom: 10px;
+  margin-top: 30px;
+  margin-bottom: 10px;
 }
 
 #zomato-link{
-	color: white;
-	text-decoration: none !important; 
+  color: white;
+  text-decoration: none !important; 
 }
 
 .thumbnail{
-	margin-top: 30px;
-	width: 150px;
-	height: 150px;
-	display: inline-block !important;
-	border: white;
+margin-top: 30px;
+width: 150px;
+height: 150px;
+display: inline-block !important;
+border: white;
   border-radius: 100px;
+}
+
+.main-title{
+  margin-top: 10px;
+  border-style: dotted !important;
+  border: white;
+}
+
+.map-img{
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+  margin-bottom: 20px;
 }
