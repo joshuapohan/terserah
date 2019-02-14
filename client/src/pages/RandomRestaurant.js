@@ -30,32 +30,66 @@ class Header extends React.Component{
 	};
 }
 
+class RestaurantName extends React.Component{
+	render(){
+		if(this.props.loading){
+			return(
+				<div>
+					<div className='loader-container'>
+						<div className='loader'></div>
+					</div>
+					<h3 id="restaurant-name">&nbsp;</h3>
+					<h4 id="restaurant-address">&nbsp;</h4>
+				</div>
+			);
+		}
+		else{
+			return(
+				<div>		
+					<h3 id="restaurant-name">{this.props.restaurant}</h3>
+					<h4 id="restaurant-address">{this.props.address}</h4>
+				</div>
+			);
+		}
+	}
+}
+
 class RestaurantDetail extends React.Component{
 	
 	constructor(props){
 		super(props);
-		this.state = {
-			restaurant: this.props.restaurant
-		}
 	}
 
 	render(){
-		if(this.state.restaurant){
+		/****************************
+		*if restaurant detail fetched
+		****************************/
+		if(this.props.restaurant){
 			return(
-				<div className="container">
-					<div className="row">
-						<div className="col-sm-4"></div>
-						<div className="col xs-12 col-sm-4 text-center">
-							<img className="thumbnail" src={this.state.restaurant.thumb}></img>
-							<h4>{this.state.restaurant.name}</h4>
-							<h4>Cuisine : {this.state.restaurant.cuisines}</h4>
-							<a id="zomato-link" target="_blank" href={this.state.restaurant.url}>View on Zomato</a>
-							<img className="map-img" src={'data:image/jpeg;base64,' + this.state.restaurant.mapImg}></img>
-						</div>
-						<div className="col-sm-4"></div>
-					</div>
+				<div>
+					<img className="thumbnail" src={this.props.restaurant.thumb}></img>
+					<h4>{this.props.restaurant.name}</h4>
+					<h4>Cuisine : {this.props.restaurant.cuisines}</h4>
+					<a id="zomato-link" target="_blank" href={this.props.restaurant.url}>View on Zomato</a>
+					<img className="map-img" src={'data:image/jpeg;base64,' + this.props.restaurant.mapImg}></img>
 				</div>
 			);
+		}
+		/****************************
+		*if still fetching
+		****************************/
+		else if(this.props.loading){
+			return(
+				<div>
+					<h2>Fetching details</h2>
+				</div>
+			);
+		}
+		/****************************
+		*initial state
+		****************************/
+		else{
+			return(<div></div>);
 		}
 	}
 }
@@ -126,11 +160,7 @@ class Randomizer extends React.Component{
 					<div className="row">
 						<div className="col-sm-4"></div>
 						<div className="col xs-12 col-sm-4 text-center">
-							<div className='loader-container'>
-								<div className='loader'></div>
-							</div>
-							<h3 id="restaurant-name">&nbsp;</h3>
-							<h4 id="restaurant-address">&nbsp;</h4>
+							<RestaurantName loading={this.state.loading} restaurant={this.state.restaurant} address={this.state.address}/>
 						</div>
 						<div className="col-sm-4"></div>
 					</div>
@@ -141,83 +171,25 @@ class Randomizer extends React.Component{
 						</div>
 						<div className="col-sm-4"></div>
 					</div>
+					<div className="row">
+						<div className="col-sm-4"></div>
+						<div className="col xs-12 col-sm-4 text-center">
+							<RestaurantDetail restaurant={this.state.restaurant_detail} loading={this.state.loadingDetail}/>
+						</div>
+						<div className="col-sm-4"></div>
+					</div>
 				</div>
 			);		
 		}
 		else{
-			if(this.state.restaurant_detail){
-				return(
-					<div>
-						<div className="container">
-							<Header/>
-							<div className="row">
-								<div className="col-sm-4"></div>
-								<div className="col xs-12 col-sm-4 text-center">
-									<h3 id="restaurant-name">{this.state.restaurant}</h3>
-									<h4 id="restaurant-address">{this.state.address}</h4>
-								</div>
-								<div className="col-sm-4"></div>
-							</div>
-							<div className="row">
-								<div className="col-sm-4"></div>
-								<div className="col xs-12 col-sm-4 text-center">
-									<button className="btn btn-primary random-button" id="random-food-btn" onClick={this.getRestaurant}>Terserah</button>
-								</div>
-								<div className="col-sm-4"></div>
-							</div>
-							<div className="row">
-								<div className="col-sm-4"></div>
-								<div className="col xs-12 col-sm-4 text-center">
-									<button className="btn btn-danger" onClick={this.getRestaurantDetail}>More Info</button>
-								</div>
-								<div className="col-sm-4"></div>
-							</div>
-						</div>
-						<RestaurantDetail restaurant={this.state.restaurant_detail}/>
-					</div>
-				);
-			}
-			else if(this.state.loadingDetail){
-				return(
-					<div>
-						<div className="container">
-							<Header/>
-							<div className="row">
-								<div className="col-sm-4"></div>
-								<div className="col xs-12 col-sm-4 text-center">
-									<h3 id="restaurant-name">{this.state.restaurant}</h3>
-									<h4 id="restaurant-address">{this.state.address}</h4>
-								</div>
-								<div className="col-sm-4"></div>
-							</div>
-							<div className="row">
-								<div className="col-sm-4"></div>
-								<div className="col xs-12 col-sm-4 text-center">
-									<button className="btn btn-primary random-button" id="random-food-btn" onClick={this.getRestaurant}>Terserah</button>
-								</div>
-								<div className="col-sm-4"></div>
-							</div>
-							<div className="row">
-								<div className="col-sm-4"></div>
-								<div className="col xs-12 col-sm-4 text-center">
-									<button className="btn btn-danger" onClick={this.getRestaurantDetail}>More Info</button>
-								</div>
-								<div className="col-sm-4"></div>
-							</div>
-						</div>
-						<h2 className="text-center">Fetching details</h2>
-					</div>
-				);
-			}
-			else{
-				return(
+			return(
+				<div>
 					<div className="container">
 						<Header/>
 						<div className="row">
 							<div className="col-sm-4"></div>
 							<div className="col xs-12 col-sm-4 text-center">
-								<h3 id="restaurant-name">{this.state.restaurant}</h3>
-								<h4 id="restaurant-address">{this.state.address}</h4>
+								<RestaurantName loading={this.state.loading} restaurant={this.state.restaurant} addres={this.state.address}/>
 							</div>
 							<div className="col-sm-4"></div>
 						</div>
@@ -236,8 +208,15 @@ class Randomizer extends React.Component{
 							<div className="col-sm-4"></div>
 						</div>
 					</div>
-				);
-			}
+					<div className="row">
+						<div className="col-sm-4"></div>
+						<div className="col xs-12 col-sm-4 text-center">
+							<RestaurantDetail restaurant={this.state.restaurant_detail} loading={this.state.loadingDetail}/>
+						</div>
+						<div className="col-sm-4"></div>
+					</div>
+				</div>
+			);
 		}
 	}
 }
